@@ -2,6 +2,8 @@
 clear;
 clc;
 
+%%  Parameters
+
 %Azimuths
 AzmMax = 180;
 AzmMin = 0;
@@ -9,18 +11,26 @@ numAzm = AzmMax - AzmMin;
 az = linspace(AzmMin,AzmMax,numAzm);
 
 %Desired Steering
-SteerAzm = 45;
+SOI = 90 + 1;
+
+%Interference Pattern
+interAzm = 80 + 1;
+
+%Signal to Noise Ratio of the Array (dB)
+SNR = 200;
 
 %Num elements
 M = 7;
 
-%Antenna Spacing (units of half-wavelength) 
- d = 1;
-% for mm = 1:M
-%    r(mm) = (mm-1)*d; 
-% end
+%%  Antenna Spacing (units of half-wavelength) 
+d = 1;
+
+r = zeros(M,1);
 if(mod(M,2) == 0)
-    error('Number of array elements must be odd')
+    for mm = 0:M/2-1
+       r(M/2 + mm) = mm*d;
+       r(M/2 - mm) = -mm*d;
+    end
 else
     r(ceil(M/2)) = 0;
     for mm = 1:floor(M/2)
@@ -29,30 +39,44 @@ else
     end
 end
 
-%Array Manifold
+%%  Array Manifold
 AM = calcArrayManifold(r,az);
 
-%Weighting Algorithm
+%%  Weighting Algorithm
 w = ones(M,1);
-%w = Weighting_ULA_Phased(M,SteerAzm);
-w = Weighting_Chebyshev(r,SteerAzm,30);
+%w = Weighting_ULA_Phased(M,d,SOI) / M;
+w = Weighting_MVDR(AM,SOI,interAzm,SNR);
 
-%Plotting
+%%  Plotting
 for phi = 1:length(az)
-   y(phi) = (w' * AM(:,phi)) / M; 
+   y(phi) = (w' * AM(:,phi)); 
 end
 
-%subplot(2,1,1)
+ymin = -60;
+ymax = 2;
+xmin = AzmMin - 2;
+xmax = AzmMax + 2;
 plot(az,20*log10(abs(y)))
 title('Array Response')
 xlabel('Angle of Arrival (\circ)')
 ylabel('Magnitude (dB)')
-ylim([-60,2])
-% subplot(2,1,2)
-% plot(az,angle(y)*180/pi)
-% ylim([-182,182])
-% xlabel('Angle of Arrival (\circ)')
-% ylabel('Phase (\circ)')
+ylim([ymin,ymax])
+hold on
+
+x0 = SOI; %% Plot vertical lines at SOI and interferer location
+grid_y = ymax:-1:ymin;
+grid_x = x0+0*(grid_y);
+plot(grid_x,grid_y,'linewidth',1.5)
+hold on
+x0 = interAzm;
+if(abs(x0) > 180)
+   x0 = 0; 
+end
+grid_x = x0+0*grid_y;
+plot(grid_x,grid_y,'--r','linewidth',1.5)
+legend('Array Pattern','Signal of Interest','Interferer')
+
+
 
 
 
