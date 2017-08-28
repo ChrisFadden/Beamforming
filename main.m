@@ -11,16 +11,16 @@ numAzm = AzmMax - AzmMin;
 az = linspace(AzmMin,AzmMax,numAzm);
 
 %Desired Steering
-SOI = 90 + 1;
+SOI = 70 - 1;
 
 %Interference Pattern
-interAzm = 80 + 1;
+interAzm = 30 - 1;
 
 %Signal to Noise Ratio of the Array (dB)
-SNR = 200;
+SNR = 30;
 
 %Num elements
-M = 7;
+M = 10;
 
 %%  Antenna Spacing (units of half-wavelength) 
 d = 1;
@@ -61,6 +61,7 @@ title('Array Response')
 xlabel('Angle of Arrival (\circ)')
 ylabel('Magnitude (dB)')
 ylim([ymin,ymax])
+xlim([AzmMin,AzmMax])
 hold on
 
 x0 = SOI; %% Plot vertical lines at SOI and interferer location
