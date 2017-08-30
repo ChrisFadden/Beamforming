@@ -10,7 +10,7 @@ function [ am ] = calcArrayManifold(r,az)
     am = zeros(length(r),length(az));
     for phi = 1:length(az)
         for elem = 1:length(r)
-            am(elem, phi) = exp(-1j*r(elem)*pi*(cosd(az(phi)))) / (length(r)^2);
+            am(elem, phi) = exp(-1j*r(elem)*pi*(cosd(az(phi)))) / (length(r));
         end 
     end
 
