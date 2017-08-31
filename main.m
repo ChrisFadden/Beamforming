@@ -14,28 +14,34 @@ az = linspace(AzmMin,AzmMax,numAzm);
 SOI = 90 + 1;
 
 %Interference Pattern
-interAzm = 3000 + 1;
+interAzm = 85 + 1;
 
 %Signal to Noise Ratio of the Array (dB)
 SNR = 60;
 
+%Desired Side Lobe Level
+SLL = 30;
+
 %Num elements
-M = 10;
+M = 0;
+M = 100;
 
 %%  Antenna Spacing (units of half-wavelength) 
 r = zeros(M,1);
 d = 1;
 
-%r = Position_ULA_PhaseCentered(M,d);
-r = Position_ULA_PhaseProgression(M,d);
+r = Position_ULA_PhaseCentered(M,d);
+%r = Position_ULA_PhaseProgression(M,d);
 
 %%  Array Manifold
 AM = calcArrayManifold(r,az);
 
 %%  Weighting Algorithm
 w = ones(M,1);
-%w = Weighting_ULA_Phased(M,d,SOI);
-w = Weighting_MVDR(AM,SOI,interAzm,SNR);
+w = Weighting_ULA_Phased(M,d,az(SOI));
+w = Weighting_Chebyshev(M,SLL);
+%w = Weighting_MVDR(AM,SOI);
+
 
 %%  Plotting
 for phi = 1:length(az)
@@ -53,8 +59,9 @@ ylabel('Magnitude (dB)')
 ylim([ymin,ymax])
 xlim([AzmMin,AzmMax])
 hold on
+max(abs(y))
 
-x0 = SOI; %% Plot vertical lines at SOI and interferer location
+x0 = SOI-1; %% Plot vertical lines at SOI and interferer location
 grid_y = ymax:-1:ymin;
 grid_x = x0+0*(grid_y);
 plot(grid_x,grid_y,'linewidth',1.5)
@@ -68,14 +75,14 @@ plot(grid_x,grid_y,'--r','linewidth',1.5)
 legend('Array Pattern','Signal of Interest','Interferer')
 
 %%  Analytic reference
-figure()
-for phi = 1:length(az)
-    psi = pi*r(2)*cosd(az(phi));
-    yA(phi) = sin(M * psi / 2) / (M * sin(psi/2));
-end
-yA(91) = 1;
-plot(az,20*log10(abs(yA)))
-ylim([-60,2])
+% figure()
+% for phi = 1:length(az)
+%     psi = pi*r(2)*cosd(az(phi));
+%     yA(phi) = sin(M * psi / 2) / (M * sin(psi/2));
+% end
+% yA(91) = 1;
+% plot(az,20*log10(abs(yA)))
+% ylim([-60,2])
 
 
 
