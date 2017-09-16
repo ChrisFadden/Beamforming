@@ -24,7 +24,7 @@ SLL = 30;
 
 %Num elements
 M = 0;
-M = 100;
+M = 5;
 
 %%  Antenna Spacing (units of half-wavelength) 
 r = zeros(M,1);
@@ -73,6 +73,16 @@ end
 grid_x = x0+0*grid_y;
 plot(grid_x,grid_y,'--r','linewidth',1.5)
 legend('Array Pattern','Signal of Interest','Interferer')
+
+%%  MUSIC
+MS = MUSIC_Spectrum(w,AM,1);
+figure()
+plot(az,10*log10(MS));
+title('MUSIC Spectrum')
+xlabel('Angle of Arrival (\circ)')
+ylabel('Magnitude (dB)')
+ylim([min(10*log10(MS(:))) - 2,ymax])
+xlim([AzmMin,AzmMax])
 
 %%  Analytic reference
 % figure()
