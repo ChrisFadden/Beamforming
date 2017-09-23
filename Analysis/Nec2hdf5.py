@@ -3,7 +3,7 @@ import numpy as np
 import re
 
 f = open("Test.out","r") 
-
+Normalize = True
 #***************************
 #   Create HDF5 file
 #***************************
@@ -56,7 +56,10 @@ while(True):
     
         EphiMag.append(float(data[10]) * 10**(float(data[11])))
         EphiPhase.append(float(data[12]))
-        
+    
+    if(Normalize):
+        EthMag = np.asarray(EthMag) - np.max(EthMag)
+        EphiMag = np.asarray(EphiMag) - np.max(EphiMag)
     #Place Radiation Patterns in a group in the HDF5 file 
     gPattern.create_dataset("Elevation",data = np.asarray(Elev))
     gPattern.create_dataset("Azimuth",data = np.asarray(Azm))
