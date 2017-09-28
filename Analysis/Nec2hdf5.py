@@ -143,10 +143,10 @@ for line in f:
 #   normalize over freq
 #   if user input
 #*********************
-mag = mag - np.max(mag)
+mag = mag / np.max(mag)
 if(Normalize):
     for ff in range(len(freq)):
-        mag[ff,:,:,:] = mag[ff,:,:,:] - np.max(mag[ff,:,:,:])
+        mag[ff,:,:,:] = mag[ff,:,:,:] / np.max(mag[ff,:,:,:])
 
 #***********************
 #   Create Datasets for 
