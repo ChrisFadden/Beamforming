@@ -6,6 +6,10 @@
 #in an array, one PT card per element.  The currents are
 #stored in an HDF5 file for easy use in MATLAB, Python or C
 #
+#   The transpose is not stored, since BLAS has methods for
+#   the transpose.  Note that HDF5 will store it in Row-major
+#   format, when it is read in by C 
+#
 #   TO DO:
 #       Add Polarization
 #       See if it can all be done in one pass?
@@ -87,21 +91,18 @@ f5.create_group("Frequency (MHz)")
 f5.create_dataset("listFreq", data = np.asarray(freq))
 f5.create_dataset("listElev", data = np.asarray(elev))
 f5.create_dataset("listAzm", data = np.asarray(azm))
+f5.create_dataset("listElem", data = np.asarray(Elem))
 for ff in freq:
     gFreq = f5.create_group(str(ff))
     gFreq.create_group("Elevation (degrees)")
     for th in elev:
         gElev = gFreq.create_group(str(th))
-        gElev.create_group("Elements") 
-        for ii in Elem:
-            gElem = gElev.create_group(str(ii))
 
 #**************************
-#   Put Mag/Phase data into
-#   the HDF5 file
+#   Parse Mag/Phase data 
 #**************************
-mag = np.zeros((len(elev),len(azm)))
-phase = np.zeros((len(elev),len(azm)))
+mag = np.zeros((len(freq),len(elev),len(azm),len(Elem)))
+phase = np.zeros((len(freq),len(elev),len(azm),len(Elem)))
 
 freqIdx = 0
 elemIdx = 0
@@ -126,21 +127,44 @@ for line in f:
             dataArray = re.findall('[+-]?\d+(?:\.\d+)?',data)
             
             #make mag[elev,azm] array
-            mag[jj,ii] = float(dataArray[2]) * 10**(float(dataArray[3]))
-            phase[jj,ii] = float(dataArray[4])
+            mag[freqIdx,jj,ii,elemIdx] = float(dataArray[2]) * 10**(float(dataArray[3]))
+            phase[freqIdx,jj,ii,elemIdx] = float(dataArray[4])
             if(jj < len(elev)-1):
                 jj = jj + 1
             else:
                 jj = 0 
                 ii = ii + 1  
         
-        #Place array in the dataset
-        for th in range(len(elev)):
-            gElem = f5[str(freq[freqIdx])][str(elev[th])][str(Elem[elemIdx])]
-            gElem.create_dataset("Magnitude",data = mag[th,:])
-            gElem.create_dataset("Phase", data = phase[th,:])
         freqIdx = freqIdx + 1
+
+#*********************
+#   Normalize max to 1
+#   
+#   normalize over freq
+#   if user input
+#*********************
+mag = mag / np.max(mag)
+if(Normalize):
+    for ff in range(len(freq)):
+        mag[ff,:,:,:] = mag[ff,:,:,:] / np.max(mag[ff,:,:,:])
+
+#***********************
+#   Create Datasets for 
+#   Mag/Phase in HDF5 file
+#***********************
+for ff in range(len(freq)):
+    for th in range(len(elev)):
+        gElev = f5[str(freq[ff])][str(elev[th])] 
         
+        #Create Datasets
+        magSet = gElev.create_dataset("Magnitude", data = mag[ff,th,:,:])
+        phaseSet = gElev.create_dataset("Phase",data = phase[ff,th,:,:])
+        
+        #Label dimensions
+        magSet.dims[0].label = "Azimuth"
+        magSet.dims[1].label = "Element"
+        phaseSet.dims[0].label = "Azimuth"
+        phaseSet.dims[1].label = "Element"
 f.close()
 
 
