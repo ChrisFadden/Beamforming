@@ -4,6 +4,11 @@
 # Prerequisites
 *.d
 
+#hdf5 files
+*.h5
+*.hdf5
+*.pdf
+
 # Object files
 *.o
 *.ko

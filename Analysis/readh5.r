@@ -45,19 +45,14 @@ theme_pub <- function (base_size = 12, base_family = "") {
 groups <- h5dump("testnec.h5",load=FALSE)
 Freq <- groups$Frequency
 
-#Get number of Frequencies
-N <- length(attributes(Freq))
-
-#Get specific dataset to work with
-data <- Freq[4];
-
 #Access Dataset of specific frequency
-Azm <- h5read("testnec.h5",paste("/Frequency/",attr(data,"n"),"/Azimuth",sep=""))
-Mag <- h5read("testnec.h5",paste("/Frequency/",attr(data,"n"),"/ElevMagnitude",sep=""))
+Azm <- h5read("testnec.h5","/listAzm")
+Mag <- h5read("testnec.h5","/199.8/90.0/Magnitude")
+Mag <- Mag[1,]
 
 qplot(Azm,Mag,geom="line") + theme_pub()
 
 #p = ggplot(data, aes(x = x)) +
-#    geom_histogram() +
-#    theme_pub()
+    #geom_histogram() +
+    #theme_pub()
 H5close()
