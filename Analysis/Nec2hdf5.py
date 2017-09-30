@@ -168,12 +168,14 @@ for ff in range(len(freq)):
         #Create Datasets
         magSet = gElev.create_dataset("Magnitude", data = mag[ff,th,:,:])
         phaseSet = gElev.create_dataset("Phase",data = phase[ff,th,:,:])
-        
+        hermSet = gElev.create_dataset("Hermitian",data = -1 * phase[ff,th,:,:])        
         #Label dimensions
         magSet.dims[0].label = "Azimuth"
         magSet.dims[1].label = "Element"
         phaseSet.dims[0].label = "Azimuth"
         phaseSet.dims[1].label = "Element"
+        hermSet.dims[0].label = "Azimuth"
+        hermSet.dims[1].label = "Element"
 f.close()
 
 
