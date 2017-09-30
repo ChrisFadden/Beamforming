@@ -1,99 +1,45 @@
-%MVDR Algorithm Main
 clear;
 clc;
+%%
+%*****************
+%   User Inputs
+%       hdf5 input file
+%       Frequency, Elevation
+%       Signals of Interest
+%       Signal to Noise Ratio
+%*****************
+%H5 file
+fp = '../build/testnec.h5';
+dp = '/289.8/90.0/';
 
-%%  Parameters
+%Signal of Interest
+SOI = [34];
 
-%Azimuths
-AzmMax = 180;
-AzmMin = 0;
-numAzm = AzmMax - AzmMin + 1;
-az = linspace(AzmMin,AzmMax,numAzm);
+%Signal to Noise ratio (dB)
+SNR = 30;
 
-%Desired Steering
-SOI = 90 + 1;
+%%
+%*********************
+%   Read in HDF5 File
+%       read in array manifold
+%       create noisy input signal
+%*********************
 
-%Interference Pattern
-interAzm = 85 + 1;
+%Get Azimuths
+azm = h5read(fp,'/listAzm');
 
-%Signal to Noise Ratio of the Array (dB)
-SNR = 60;
+%Get Array Manifold
+AM.mag = h5read(fp,strcat(dp,'Magnitude'));
+AM.phase = h5read(fp,strcat(dp,'Phase'));
+AM.herm = h5read(fp,strcat(dp,'Hermitian'));
 
-%Desired Side Lobe Level
-SLL = 30;
+%Get incoming signal, add noise
+x = AM.mag(:,SOI) .* exp(1j * AM.phase(:,SOI));
+x = awgn(x,SNR,'measured');
 
-%Num elements
-M = 0;
-M = 5;
+%%  Computation:
+    P = abs(DF_Bart(x,AM));
+    P2 = DF_Bart_Chol(x,AM);
+    Bart_Check = norm(P - P2);
 
-%%  Antenna Spacing (units of half-wavelength) 
-r = zeros(M,1);
-d = 1;
-
-r = Position_ULA_PhaseCentered(M,d);
-%r = Position_ULA_PhaseProgression(M,d);
-
-%%  Array Manifold
-AM = calcArrayManifold(r,az);
-
-%%  Weighting Algorithm
-w = ones(M,1);
-w = Weighting_ULA_Phased(M,d,az(SOI));
-w = Weighting_Chebyshev(M,SLL);
-%w = Weighting_MVDR(AM,SOI);
-
-
-%%  Plotting
-for phi = 1:length(az)
-   y(phi) = (w' * AM(:,phi)); 
-end
-
-ymin = -60;
-ymax = 2;
-xmin = AzmMin - 2;
-xmax = AzmMax + 2;
-plot(az,20*log10(abs(y)))
-title('Array Response')
-xlabel('Angle of Arrival (\circ)')
-ylabel('Magnitude (dB)')
-ylim([ymin,ymax])
-xlim([AzmMin,AzmMax])
-hold on
-max(abs(y))
-
-x0 = SOI-1; %% Plot vertical lines at SOI and interferer location
-grid_y = ymax:-1:ymin;
-grid_x = x0+0*(grid_y);
-plot(grid_x,grid_y,'linewidth',1.5)
-hold on
-x0 = interAzm;
-if(abs(x0) > 180)
-   x0 = SOI; 
-end
-grid_x = x0+0*grid_y;
-plot(grid_x,grid_y,'--r','linewidth',1.5)
-legend('Array Pattern','Signal of Interest','Interferer')
-
-%%  MUSIC
-MS = MUSIC_Spectrum(w,AM,1);
-figure()
-plot(az,10*log10(MS));
-title('MUSIC Spectrum')
-xlabel('Angle of Arrival (\circ)')
-ylabel('Magnitude (dB)')
-ylim([min(10*log10(MS(:))) - 2,ymax])
-xlim([AzmMin,AzmMax])
-
-%%  Analytic reference
-% figure()
-% for phi = 1:length(az)
-%     psi = pi*r(2)*cosd(az(phi));
-%     yA(phi) = sin(M * psi / 2) / (M * sin(psi/2));
-% end
-% yA(91) = 1;
-% plot(az,20*log10(abs(yA)))
-% ylim([-60,2])
-
-
-
-
+    Pm = DF_MUSIC(x,AM,length(SOI));
