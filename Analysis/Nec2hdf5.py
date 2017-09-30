@@ -29,7 +29,7 @@ Normalize = True
 #***************************
 #   Create HDF5 file
 #***************************
-f5 = h5py.File("testnec.h5","w")
+f5 = h5py.File("../build/testnec.h5","w")
 
 #*****************
 #   Get Parameters
@@ -144,9 +144,18 @@ for line in f:
 #   if user input
 #*********************
 mag = mag / np.max(mag)
-if(Normalize):
-    for ff in range(len(freq)):
-        mag[ff,:,:,:] = mag[ff,:,:,:] / np.max(mag[ff,:,:,:])
+
+normFactor = np.zeros((len(freq),len(elev)))
+
+for ff in range(len(freq)):
+    for th in range(len(elev)):
+        tmp = mag[ff,th,:,:]
+        normFactor[ff,th] = np.max(np.sum(tmp,axis=1))
+        if(Normalize):
+            mag[ff,th,:,:] = mag[ff,th,:,:] / normFactor[ff,th]
+
+if(not Normalize):
+    mag = mag / np.max(normFactor)
 
 #***********************
 #   Create Datasets for 

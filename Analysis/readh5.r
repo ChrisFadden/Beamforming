@@ -42,12 +42,12 @@ theme_pub <- function (base_size = 12, base_family = "") {
                                           size = 0.2))
 }
 
-groups <- h5dump("testnec.h5",load=FALSE)
+groups <- h5dump("../build/testnec.h5",load=FALSE)
 Freq <- groups$Frequency
 
 #Access Dataset of specific frequency
-Azm <- h5read("testnec.h5","/listAzm")
-Mag <- h5read("testnec.h5","/199.8/90.0/Magnitude")
+Azm <- h5read("../build/testnec.h5","/listAzm")
+Mag <- h5read("../build/testnec.h5","/199.8/90.0/Magnitude")
 Mag <- Mag[1,]
 
 qplot(Azm,Mag,geom="line") + theme_pub()
