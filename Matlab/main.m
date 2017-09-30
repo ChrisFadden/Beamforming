@@ -13,7 +13,7 @@ fp = '../build/testnec.h5';
 dp = '/289.8/90.0/';
 
 %Signal of Interest
-SOI = [34];
+SOI = [30,45,60];
 
 %Signal to Noise ratio (dB)
 SNR = 30;
@@ -38,8 +38,10 @@ x = AM.mag(:,SOI) .* exp(1j * AM.phase(:,SOI));
 x = awgn(x,SNR,'measured');
 
 %%  Computation:
-    P = abs(DF_Bart(x,AM));
-    P2 = DF_Bart_Chol(x,AM);
-    Bart_Check = norm(P - P2);
-
-    Pm = DF_MUSIC(x,AM,length(SOI));
+    P_bart = abs(DF_Bart(x,AM));
+    P_bartChol = DF_Bart_Chol(x,AM);
+ 
+    P_music = DF_MUSIC(x,AM,length(SOI));
+    
+    P_mvdr = DF_MVDR(x,AM);   
+    
