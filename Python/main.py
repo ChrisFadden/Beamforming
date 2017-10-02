@@ -21,20 +21,20 @@ azm = np.asarray(f5['/listAzm'])
 
 #get Array Manifold
 d5 = f5[dp]
-AM_mag = np.asarray(d5['Magnitude'])
-AM_phase = np.asarray(d5['Phase'])
-AM_herm = np.asarray(d5['Hermitian'])
+AM_mag = (np.asarray(d5['Magnitude'])).transpose()
+AM_phase = (np.asarray(d5['Phase'])).transpose()
+AM_herm = (np.asarray(d5['Hermitian'])).transpose()
 
 #create signal
-x = AM_mag[SOI,:] * np.exp(1j * AM_phase[SOI,:])
+x = AM_mag[:,SOI] * np.exp(1j * AM_phase[:,SOI])
 noise = 10**(-SNR / 10)
-x += (np.min(x) * noise * np.random.randn(len(x.transpose())))
-Rxx = np.dot(x.transpose(),x)
+x += (np.min(x) * noise * np.random.randn(len(x),1))
+Rxx = np.dot(x,x.conj().T)
 
 Pds = ds.getSpectrum(Rxx,AM_mag,AM_herm)
 
 
-plt.plot(azm,P)
+plt.plot(azm,Pds)
 plt.show()
 
 print("Hello World")
