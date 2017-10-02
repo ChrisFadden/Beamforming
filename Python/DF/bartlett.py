@@ -5,7 +5,8 @@ def hello():
     print("Hello from Bartlett DF module")
 
 def getSpectrum(Rxx,AM_mag,AM_herm):
-     
+    
+    print("LU is not as good as LDLT... can use eig since its symmetric...")
     PL,U = scipy.linalg.lu(Rxx,permute_l = True) 
     
     aH = (AM_mag * np.exp(1j * AM_herm)).transpose()

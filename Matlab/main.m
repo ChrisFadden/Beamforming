@@ -13,10 +13,10 @@ fp = '../build/testnec.h5';
 dp = '/289.8/90.0/';
 
 %Signal of Interest
-SOI = [30,45,60];
+SOI = [30];
 
 %Signal to Noise ratio (dB)
-SNR = 30;
+SNR = 10;
 
 %%
 %*********************
@@ -44,4 +44,22 @@ x = awgn(x,SNR,'measured');
     P_music = DF_MUSIC(x,AM,length(SOI));
     
     P_mvdr = DF_MVDR(x,AM);   
+        
+    subplot(2,2,1)
+    plot(P_bart)
+    title('Bartlet')
+    hold on
+    subplot(2,2,2)
+    plot(P_bartChol)
+    title('Bartlet - Cholesky')
+    subplot(2,2,3)
+    plot(P_music)
+    title('MUSIC')
+    subplot(2,2,4)
+    plot(P_mvdr)
+    title('MVDR')
+    
+    
+    
+    
     

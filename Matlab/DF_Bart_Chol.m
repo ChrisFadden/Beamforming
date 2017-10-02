@@ -16,7 +16,6 @@ function [ P ] = DF_Bart_Chol(x, AM)
     aH = (AM.mag .* exp(1j * AM.herm)).';
     
     [L,D] = ldl(Rxx);
-    %P = abs(aH * L * D * ones(length(x),1)).^2;
     P = abs(aH * L * D).^2 * ones(length(x),1);
     P = P ./ max(P);
 end

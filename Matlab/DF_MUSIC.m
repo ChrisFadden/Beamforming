@@ -25,5 +25,5 @@ function [ P ] = DF_MUSIC(x, AM,n)
     
     P = abs(aH * Vn).^2 * ones(length(x)-n,1); 
     
-    P = max(P) ./ P;
+    P = min(P) ./ P;
 end

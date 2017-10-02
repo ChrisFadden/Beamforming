@@ -60,3 +60,4 @@ Mkfile.old
 dkms.con
 build/
 *.pyc
+__pycache__/

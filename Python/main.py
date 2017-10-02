@@ -2,6 +2,8 @@ import h5py
 import numpy as np
 import random
 import DF.bartlett as ds
+import DF.mvdr as mvdr
+import DF.music as MUSIC
 import matplotlib.pyplot as plt
 
 ds.hello()
@@ -28,13 +30,14 @@ AM_herm = (np.asarray(d5['Hermitian'])).transpose()
 #create signal
 x = AM_mag[:,SOI] * np.exp(1j * AM_phase[:,SOI])
 noise = 10**(-SNR / 10)
-x += (np.min(x) * noise * np.random.randn(len(x),1))
+#x += (0.001 * np.min(abs(x)) * noise * np.random.randn(len(x),1))
 Rxx = np.dot(x,x.conj().T)
 
 Pds = ds.getSpectrum(Rxx,AM_mag,AM_herm)
+Pmvdr = mvdr.getSpectrum(Rxx,AM_mag,AM_herm)
+Pmusic = MUSIC.getSpectrum(Rxx,AM_mag,AM_herm,len(SOI))
 
-
-plt.plot(azm,Pds)
+plt.plot(azm,Pmusic)
 plt.show()
 
 print("Hello World")

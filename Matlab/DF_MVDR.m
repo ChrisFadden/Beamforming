@@ -18,8 +18,9 @@ function [ P ] = DF_MVDR(x, AM)
     Rxx = x * x' + 10^(-12) * eye(length(x));
     
     aH = (AM.mag .* exp(1j * AM.herm)).';
-    a = (AM.mag .* exp(1j * AM.phase));
     
-    P = abs(diag(aH * inv(Rxx) * a));
-    P = max(P) ./ P;
+    RxxI = inv(Rxx);
+    [L,D] = ldl(RxxI);
+    P = abs(aH * L * D).^2 * ones(length(x),1);
+    P = min(P) ./ P;
 end
