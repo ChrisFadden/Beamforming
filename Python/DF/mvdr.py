@@ -12,6 +12,7 @@ def getSpectrum(Rxx,AM_mag,AM_herm):
     
     RxxI = np.linalg.inv(Rxx)
     
+    #The LAPACK routine for this is sytrf
     print("LU is not as good as LDLT... can use eig since its symmetric...")
     PL, U = scipy.linalg.lu(RxxI,permute_l=True)
 
