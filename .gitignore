@@ -59,3 +59,4 @@ Module.symvers
 Mkfile.old
 dkms.con
 build/
+*.pyc
