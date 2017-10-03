@@ -5,13 +5,14 @@ def hello():
     print("Hello from Bartlett DF module")
 
 def getSpectrum(Rxx,AM_mag,AM_herm):
-    
-    print("LU is not as good as LDLT... can use eig since its symmetric...")
-    PL,U = scipy.linalg.lu(Rxx,permute_l = True) 
-    
-    aH = (AM_mag * np.exp(1j * AM_herm)).transpose()
+       
+    Rxx += 10**-9 * np.eye(Rxx.shape[0])
 
-    P = abs(np.dot(aH,PL))**2 
+    aH = (AM_mag * np.exp(1j * AM_herm)).transpose()
+    
+    L = np.linalg.cholesky(Rxx)
+
+    P = abs(np.dot(aH,L))**2 
     P = np.dot(P,np.ones(Rxx.shape[0]))
     
     return P / np.max(P)

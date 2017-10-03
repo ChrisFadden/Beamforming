@@ -37,7 +37,7 @@ Pds = ds.getSpectrum(Rxx,AM_mag,AM_herm)
 Pmvdr = mvdr.getSpectrum(Rxx,AM_mag,AM_herm)
 Pmusic = MUSIC.getSpectrum(Rxx,AM_mag,AM_herm,len(SOI))
 
-plt.plot(azm,Pmusic)
+plt.plot(azm,Pds)
 plt.show()
 
 print("Hello World")

@@ -8,7 +8,7 @@ def getSpectrum(Rxx,AM_mag,AM_herm,n):
     
     aH = (AM_mag * np.exp(1j * AM_herm)).transpose()
     
-    w,v = np.linalg.eig(Rxx)
+    w,v = np.linalg.eigh(Rxx)
 
     idx = np.argsort(w)
 
