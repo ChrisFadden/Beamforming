@@ -6,8 +6,6 @@ import DF.mvdr as mvdr
 import DF.music as MUSIC
 import matplotlib.pyplot as plt
 
-ds.hello()
-
 #Signal of Interest
 SOI = [30]
 
@@ -23,9 +21,9 @@ azm = np.asarray(f5['/listAzm'])
 
 #get Array Manifold
 d5 = f5[dp]
-AM_mag = (np.asarray(d5['Magnitude'])).transpose()
-AM_phase = (np.asarray(d5['Phase'])).transpose()
-AM_herm = (np.asarray(d5['Hermitian'])).transpose()
+AM_mag = (np.asarray(d5['Magnitude']))
+AM_phase = (np.asarray(d5['Phase']))
+AM_herm = (np.asarray(d5['Hermitian']))
 
 #create signal
 x = AM_mag[:,SOI] * np.exp(1j * AM_phase[:,SOI])
@@ -37,7 +35,8 @@ Pds = ds.getSpectrum(Rxx,AM_mag,AM_herm)
 Pmvdr = mvdr.getSpectrum(Rxx,AM_mag,AM_herm)
 Pmusic = MUSIC.getSpectrum(Rxx,AM_mag,AM_herm,len(SOI))
 
-plt.plot(azm,Pds)
+mvdr.hello()
+plt.plot(azm,Pmvdr)
 plt.show()
 
 print("Hello World")

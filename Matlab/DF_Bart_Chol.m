@@ -16,6 +16,7 @@ function [ P ] = DF_Bart_Chol(x, AM)
     aH = (AM.mag .* exp(1j * AM.herm)).';
     
     [L,D] = ldl(Rxx);
-    P = abs(aH * L * D).^2 * ones(length(x),1);
+		%NOTE the sqrt for LDLT factorization
+    P = abs(aH * L * sqrt(D)).^2 * ones(length(x),1);
     P = P ./ max(P);
 end

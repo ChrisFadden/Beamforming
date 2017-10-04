@@ -21,6 +21,7 @@ function [ P ] = DF_MVDR(x, AM)
     
     RxxI = inv(Rxx);
     [L,D] = ldl(RxxI);
-    P = abs(aH * L * D).^2 * ones(length(x),1);
+		%NOTE the sqrt for LDLT factorization
+    P = abs(aH * L * sqrt(D)).^2 * ones(length(x),1);
     P = min(P) ./ P;
 end

@@ -16,7 +16,7 @@ dp = '/289.8/90.0/';
 SOI = [30];
 
 %Signal to Noise ratio (dB)
-SNR = 10;
+SNR = 20;
 
 %%
 %*********************
@@ -29,9 +29,9 @@ SNR = 10;
 azm = h5read(fp,'/listAzm');
 
 %Get Array Manifold
-AM.mag = h5read(fp,strcat(dp,'Magnitude'));
-AM.phase = h5read(fp,strcat(dp,'Phase'));
-AM.herm = h5read(fp,strcat(dp,'Hermitian'));
+AM.mag = (h5read(fp,strcat(dp,'Magnitude')))';
+AM.phase = (h5read(fp,strcat(dp,'Phase')))';
+AM.herm = (h5read(fp,strcat(dp,'Hermitian')))';
 
 %Get incoming signal, add noise
 x = AM.mag(:,SOI) .* exp(1j * AM.phase(:,SOI));

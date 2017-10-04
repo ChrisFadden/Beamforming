@@ -166,9 +166,9 @@ for ff in range(len(freq)):
         gElev = f5[str(freq[ff])][str(elev[th])] 
         
         #Create Datasets
-        magSet = gElev.create_dataset("Magnitude", data = mag[ff,th,:,:])
-        phaseSet = gElev.create_dataset("Phase",data = phase[ff,th,:,:])
-        hermSet = gElev.create_dataset("Hermitian",data = -1 * phase[ff,th,:,:])        
+        magSet = gElev.create_dataset("Magnitude", data = (mag[ff,th,:,:]).T)
+        phaseSet = gElev.create_dataset("Phase",data = (phase[ff,th,:,:]).T)
+        hermSet = gElev.create_dataset("Hermitian",data = -1 * (phase[ff,th,:,:]).T)        
         #Label dimensions
         magSet.dims[0].label = "Azimuth"
         magSet.dims[1].label = "Element"
