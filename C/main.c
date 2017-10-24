@@ -37,7 +37,7 @@ int main(int arg, char **argv) {
 
   /*******************************
    * BLAS / LAPACK
-	******************************/
+   ******************************/
 
   double A_BLAS[2] = {0.0, 0.0}, B[2] = {0.0, 0.0}, C[2] = {0.0, 0.0},
 	 ALPHA = 0.0, BETA = 0.0;
@@ -68,8 +68,8 @@ int main(int arg, char **argv) {
   dgesv_(&n, &nrhs, A, &lda, ipiv, b, &ldb, &info);
 
   /*******************************
-  *	ECOS
-  ******************************/
+   *	ECOS
+   ******************************/
   pwork *mywork;
 
   printf("Hello World\n");
