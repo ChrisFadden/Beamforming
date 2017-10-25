@@ -42,8 +42,10 @@ theme_pub <- function (base_size = 12, base_family = "") {
                                           size = 0.2))
 }
 
-groups <- h5dump("../build/testnec.h5",load=FALSE)
-Freq <- groups$Frequency
+print("THIS MUST BE ADJUSTED FOR NEW FORMAT")
+
+#groups <- h5dump("../build/testnec.h5",load=FALSE)
+#Freq <- groups$Frequency
 
 #Access Dataset of specific frequency
 Azm <- h5read("../build/testnec.h5","/listAzm")
