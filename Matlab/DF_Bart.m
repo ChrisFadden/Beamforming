@@ -1,19 +1,18 @@
-function [ P ] = DF_Bart(x, AM)
+function [ P ] = DF_Bart(Rxx, AM_mag, AM_phase)
 %%  Description:
  %      Bartlett Beamformer
  %      Implements P(azm) = a^H Rxx a
 
 %%  Inputs:
- %      x is the input signal
+ %      Rxx is the input covariance matrix
  %     AM is the array manifold
 
 %%  Outputs:
  %      P returns the power at each angle
 
 %%  Computation:
-    Rxx = x * x';
-    aH = (AM.mag .* exp(1j * AM.herm)).';
-    a = (AM.mag .* exp(1j * AM.phase));
+    aH = (AM_mag .* exp(1j * AM_phase))';
+    a = (AM_mag .* exp(1j * AM_phase));
     
     %Should be able to use projection matrices
     %to get the diagonal elements...

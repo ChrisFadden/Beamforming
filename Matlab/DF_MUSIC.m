@@ -1,4 +1,4 @@
-function [ P ] = DF_MUSIC(x, AM,n)
+function [ P ] = DF_MUSIC(Rxx, AM_mag,AM_phase,n)
 %%  Description:
  %     MUSIC Algorithm
  %    
@@ -15,15 +15,14 @@ function [ P ] = DF_MUSIC(x, AM,n)
  %      P returns the power at each angle
 
 %%  Computation:
-    aH = (AM.mag .* exp(1j * AM.herm)).';
+    aH = (AM_mag .* exp(1j * AM_phase))';
 
-    Rxx = x * x';
     [V,D] = eig(Rxx);
     [~,idx] = sort(diag(D));
     V = V(:,idx);
     Vn = V(:,1:end-n);
     
-    P = abs(aH * Vn).^2 * ones(length(x)-n,1); 
+    P = abs(aH * Vn).^2 * ones(size(Rxx,1)-n,1); 
     
     P = min(P) ./ P;
 end

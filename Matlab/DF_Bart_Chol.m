@@ -1,4 +1,4 @@
-function [ P ] = DF_Bart_Chol(x, AM)
+function [ P ] = DF_Bart_Chol(Rxx, AM_mag,AM_phase)
 %%  Description:
  %      Bartlett Beamformer
  %      Implements P(azm) = a^H L D L^T a
@@ -12,11 +12,10 @@ function [ P ] = DF_Bart_Chol(x, AM)
  %      P returns the power at each angle
 
 %%  Computation:
-    Rxx = x * x';
-    aH = (AM.mag .* exp(1j * AM.herm)).';
+    aH = (AM_mag .* exp(1j * AM_phase))';
     
     [L,D] = ldl(Rxx);
 		%NOTE the sqrt for LDLT factorization
-    P = abs(aH * L * sqrt(D)).^2 * ones(length(x),1);
+    P = abs(aH * L * sqrt(D)).^2 * ones(size(Rxx,1),1);
     P = P ./ max(P);
 end
