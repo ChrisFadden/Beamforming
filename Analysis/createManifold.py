@@ -35,9 +35,11 @@ def createHDF5(fn,freq,elev,azm,mag,phase):
     phaseSet.dims[0].label = "Freq x Elev x Azimuth" 
     phaseSet.dims[1].label = "Element"
 
-def nec2hdf5():
-    f = open("Test.out","r") 
-    
+def nec2hdf5(fn):
+    #f = open("Test.out","r") 
+    f = open(fn,"r")    
+
+
     Normalize = True
 
     freq = set()
@@ -120,7 +122,14 @@ def nec2hdf5():
     mag = np.reshape(np.ravel(mag),(len(freq)*len(elev)*len(azm),len(Elem)))
     phase = np.reshape(np.ravel(phase),(len(freq)*len(elev)*len(azm),len(Elem)))
     
-    createHDF5("../build/testNecNewFormat.h5",freq,elev,azm,mag,phase)
+    if(Normalize):
+        mag = mag / np.max(np.ravel(mag))
+
+    fnh5 = fn[:-4]
+    fnh5 = fnh5 + ".h5"
+    createHDF5(fnh5,freq,elev,azm,mag,phase)
+    
+    print("Hello from Nec2hdf5")
 
 #omni-directional uniform linear array
 #M is number of elements
@@ -133,8 +142,8 @@ def ULA(M,d,k):
     elev = [90.0] 
     azm = np.arange(181,dtype='float')
     
-    mag = np.zeros((len(k)*len(elev)*len(azm),M))
-    phase = np.ones((len(k)*len(elev)*len(azm),M))
+    mag = np.ones((len(k)*len(elev)*len(azm),M))
+    phase = np.zeros((len(k)*len(elev)*len(azm),M))
     
     idx = 0
     for kk in range(len(k)):
@@ -154,9 +163,9 @@ def UCA():
     return
 
 if __name__ == '__main__':
-    #ULA(5,0.5,[2*np.pi])
+    ULA(5,0.5,[2*np.pi])
     #UCA()
-    nec2hdf5() 
+    #nec2hdf5("../build/Test.out") 
     print("Hello World")
 
 
