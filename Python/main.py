@@ -5,6 +5,7 @@ import DF.bartlett as DS
 import DF.mvdr as MVDR
 import DF.music as MUSIC
 import WEIGHT.mvdr as mvdr
+import WEIGHT.arrayFactor as AF
 import matplotlib.pyplot as plt
 
 def plot_DF_Spectrum(P, azm):
@@ -16,6 +17,7 @@ def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx):
     y = 0*azm 
     for ii in range(len(azm)):
         y[ii] = np.abs(np.dot(w.conj(), AM_mag[:,idx + ii] * np.exp(1j * AM_phase[:,idx + ii])))
+    y = y / np.max(y)
     plt.plot(azm,20*np.log10(y))
     plt.show()
 
@@ -23,7 +25,7 @@ def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx):
 #   Simulation Parameters
 #***********************
 #Signal of Interest
-SOI = [30]
+SOI = [90]
 
 #Signal to Noise Ratio (dB)
 SNR = 90
@@ -68,6 +70,7 @@ Pmusic = MUSIC.getSpectrum(Rxx,AM_mag,-1*AM_phase,len(SOI))
 #   Beamforming
 #*****************
 wmvdr = mvdr.getWeights(np.eye(5),AM_mag[:,soiIdx],AM_phase[:,soiIdx])
+wAF = AF.getWeights(5,0.5,2*np.pi,SOI[0])
 
 plot_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,0)
 

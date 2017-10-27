@@ -118,7 +118,6 @@ def nec2hdf5(fn):
             freqIdx = freqIdx + 1
 
     f.close()
-    print(mag[0,0,30,:])    
     mag = np.reshape(np.ravel(mag),(len(freq)*len(elev)*len(azm),len(Elem)))
     phase = np.reshape(np.ravel(phase),(len(freq)*len(elev)*len(azm),len(Elem)))
     
@@ -150,7 +149,7 @@ def ULA(M,d,k):
        freq[kk] = (round(cc * k[kk] / (2*np.pi),1))
        for phi in range(len(azm)):
             for mm in range(M):
-                phase[idx,mm] = mm * k[kk] * d * np.sin(azm[phi])  
+                phase[idx,mm] = mm * k[kk] * d * np.sin(azm[phi] * np.pi / 180.)  
             idx = idx+1 
     
     createHDF5("../build/ULA.h5",freq,elev,azm,mag,phase)
@@ -163,7 +162,7 @@ def UCA():
     return
 
 if __name__ == '__main__':
-    #ULA(5,0.5,[2*np.pi])
+    ULA(5,0.5,[2*np.pi])
     #UCA()
     nec2hdf5("../build/Test.out") 
     print("Hello World")
