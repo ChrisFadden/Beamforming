@@ -17,4 +17,4 @@ def getSpectrum(Rxx,AM_mag,AM_herm):
     P = np.dot(P,np.ones(Rxx.shape[0]))
     
     return np.min(P) / P
-    
+

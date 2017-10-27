@@ -24,7 +24,7 @@ def createHDF5(fn,freq,elev,azm,mag,phase):
     f5.create_dataset("listFreq", data = np.asarray(freq))
     f5.create_dataset("listElev", data = np.asarray(elev))
     f5.create_dataset("listAzm", data = np.asarray(azm))
-   
+    
     magSet = f5.create_dataset("Magnitude", data = mag)
     phaseSet = f5.create_dataset("Phase", data = phase)
 
@@ -118,12 +118,12 @@ def nec2hdf5(fn):
             freqIdx = freqIdx + 1
 
     f.close()
-    
+    print(mag[0,0,30,:])    
     mag = np.reshape(np.ravel(mag),(len(freq)*len(elev)*len(azm),len(Elem)))
     phase = np.reshape(np.ravel(phase),(len(freq)*len(elev)*len(azm),len(Elem)))
     
-    if(Normalize):
-        mag = mag / np.max(np.ravel(mag))
+ #   if(Normalize):
+ #       mag = mag / np.max(np.ravel(mag))
 
     fnh5 = fn[:-4]
     fnh5 = fnh5 + ".h5"
@@ -163,9 +163,9 @@ def UCA():
     return
 
 if __name__ == '__main__':
-    ULA(5,0.5,[2*np.pi])
+    #ULA(5,0.5,[2*np.pi])
     #UCA()
-    #nec2hdf5("../build/Test.out") 
+    nec2hdf5("../build/Test.out") 
     print("Hello World")
 
 
