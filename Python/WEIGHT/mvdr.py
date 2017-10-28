@@ -11,6 +11,4 @@ def getWeights(Rxx,AM_mag,AM_phase):
     
     RxxA = np.linalg.solve(Rxx,a)
     
-    print("I am wrong, don't know why for non-ULA")
-
     return RxxA / np.dot(aH,RxxA) 

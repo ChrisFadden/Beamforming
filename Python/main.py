@@ -28,7 +28,7 @@ def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx):
 #   Simulation Parameters
 #***********************
 #Signal of Interest
-SOI = [0]
+SOI = [30]
 
 #Signal to Noise Ratio (dB)
 SNR = 90
@@ -50,12 +50,15 @@ elev = np.asarray(f5['/listElev']).T
 AM_mag = (np.asarray(f5['/Magnitude'])).T
 AM_phase = (np.asarray(f5['/Phase'])).T
 
+print(AM_mag[0,0])
+print(AM_phase[0,0])
+
 #**********************
 #   Create Signal
 #**********************
 
-freqIdx = 1;
-elevIdx = 0;
+freqIdx = 10;
+elevIdx = 1;
 
 soiIdx = freqIdx*elevIdx*len(azm) +  SOI[0]
 
@@ -79,7 +82,8 @@ Pmusic = MUSIC.getSpectrum(Rxx,AM_mag,-1*AM_phase,len(SOI))
 wmvdr = mvdr.getWeights(np.eye(5),AM_mag[:,soiIdx],AM_phase[:,soiIdx])
 wAF = AF.getWeights(5,0.5,2*np.pi,SOI[0])
 wones = np.ones((1,5))
-plot_Beamform_Spectrum(wones,AM_mag,AM_phase,azm,soiIdx - SOI[0])
+
+plot_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,soiIdx - SOI[0])
 
 #Plot Spectrum
 #plot_DF_Spectrum(Pmusic,azm)

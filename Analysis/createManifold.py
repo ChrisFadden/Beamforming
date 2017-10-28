@@ -108,7 +108,7 @@ def nec2hdf5(fn):
                 
                 #make mag[elev,azm] array
                 mag[freqIdx,jj,ii,elemIdx] = float(dataArray[2]) * 10**(float(dataArray[3]))
-                phase[freqIdx,jj,ii,elemIdx] = float(dataArray[4])
+                phase[freqIdx,jj,ii,elemIdx] = float(dataArray[4]) * np.pi / 180
                 if(jj < len(elev)-1):
                     jj = jj + 1
                 else:
