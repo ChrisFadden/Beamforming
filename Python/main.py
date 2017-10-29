@@ -13,17 +13,26 @@ def plot_DF_Spectrum(P, azm):
     plt.plot(azm,P[idx:idx + len(azm)])
     plt.show()
 
-def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx):
+def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,ifPlot = True):
     y = 0*azm 
     AM_mag[:,idx:idx + len(azm)] = AM_mag[:,idx:idx + len(azm)] / np.max(AM_mag[:,idx:idx+len(azm)])
     for ii in range(len(azm)):
         y[ii] = np.abs(np.dot(w.conj(), AM_mag[:,idx + ii] * np.exp(1j * AM_phase[:,idx + ii])))
     y = y / np.max(y)
     
-    offset = int(np.round(0.5*len(azm))) 
-    plt.plot(azm - offset,20*np.log10(np.roll(y,offset)))
-    plt.show()
-
+    offset = int(np.round(0.5*len(azm)))
+    
+    azm = azm - offset
+    Mag = 20*np.log10(np.roll(y,offset))
+    
+    print(Mag[120])
+    print("I think something is wrong when Test.h5 is used at DC")
+    print("The magnitude should be 0 dB at SOI, but it doesn't give that...") 
+     
+    if(ifPlot):
+        plt.plot(azm,Mag)
+        plt.show()
+    return azm, Mag
 #***********************
 #   Simulation Parameters
 #***********************
@@ -33,8 +42,8 @@ SOI = [30]
 #Signal to Noise Ratio (dB)
 SNR = 90
 
-fp = '../build/Test.h5'
-#fp = '../build/ULA.h5'
+#fp = '../build/Test.h5'
+fp = '../build/ULA.h5'
 
 f5 = h5py.File(fp,"r")
 
@@ -50,15 +59,13 @@ elev = np.asarray(f5['/listElev']).T
 AM_mag = (np.asarray(f5['/Magnitude'])).T
 AM_phase = (np.asarray(f5['/Phase'])).T
 
-print(AM_mag[0,0])
-print(AM_phase[0,0])
-
 #**********************
 #   Create Signal
 #**********************
 
-freqIdx = 10;
+#freqIdx = 10;
 elevIdx = 1;
+freqIdx = 0
 
 soiIdx = freqIdx*elevIdx*len(azm) +  SOI[0]
 
@@ -83,8 +90,22 @@ wmvdr = mvdr.getWeights(np.eye(5),AM_mag[:,soiIdx],AM_phase[:,soiIdx])
 wAF = AF.getWeights(5,0.5,2*np.pi,SOI[0])
 wones = np.ones((1,5))
 
-plot_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,soiIdx - SOI[0])
+pAzm, pMag = plot_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,soiIdx - SOI[0])
 
+#Find Half Power Points
+offset = np.round(len(azm)*0.5)
+p3dB = np.array(np.where(pMag < -3))
+u3dB = np.min(p3dB[p3dB > (SOI[0] + offset)]) - offset
+l3dB = np.max(p3dB[p3dB < (SOI[0] + offset)]) - offset
+
+#Save Spectrum
+f5 = h5py.File("../build/weights.h5","w")
+fazm = f5.create_dataset("listAzm", data = np.asarray(pAzm))
+fmag = f5.create_dataset("Magnitude", data = np.asarray(pMag))
+fsoi = f5.create_dataset("SOI", data = np.asarray(SOI[0]))
+f3db = f5.create_dataset("HPP", data = np.asarray([u3dB,l3dB]))
+fazm.dims[0].label = "Azimuth (degrees)"
+fmag.dims[0].label = "Magnitude (dBV)" 
 #Plot Spectrum
 #plot_DF_Spectrum(Pmusic,azm)
 
