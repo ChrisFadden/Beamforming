@@ -38,7 +38,7 @@ def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,ifPlot = True):
 #   Simulation Parameters
 #***********************
 #Signal of Interest
-SOI = [160]
+SOI = [20]
 
 #Signal to Noise Ratio (dB)
 SNR = 50

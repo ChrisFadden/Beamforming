@@ -44,5 +44,7 @@ def getSpectrum(Rxx,n):
     
     allAzm = (np.arcsin(allAzm / (k*d))) * 180 / np.pi
     
+    print("I have a problem if the SOI is greater than 90, I should be negative")
+
     return azm
     
