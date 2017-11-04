@@ -4,6 +4,7 @@ import random
 import DF.bartlett as DS
 import DF.mvdr as MVDR
 import DF.music as MUSIC
+import DF.rootmusic as ROOT
 import WEIGHT.mvdr as mvdr
 import WEIGHT.arrayFactor as AF
 import matplotlib.pyplot as plt
@@ -25,7 +26,7 @@ def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,ifPlot = True):
     azm = azm - offset
     Mag = 20*np.log10(np.roll(y,offset))
     
-    print(Mag[120])
+#    print(Mag[120])
     print("I think something is wrong when Test.h5 is used at DC")
     print("The magnitude should be 0 dB at SOI, but it doesn't give that...") 
      
@@ -37,10 +38,10 @@ def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,ifPlot = True):
 #   Simulation Parameters
 #***********************
 #Signal of Interest
-SOI = [30]
+SOI = [160]
 
 #Signal to Noise Ratio (dB)
-SNR = 90
+SNR = 50
 
 #fp = '../build/Test.h5'
 fp = '../build/ULA.h5'
@@ -81,7 +82,8 @@ Rxx = np.outer(x,x.conj()) + noise * np.eye(5)
 Pds = DS.getSpectrum(Rxx,AM_mag,-1*AM_phase)
 Pmvdr = MVDR.getSpectrum(Rxx,AM_mag,-1*AM_phase)
 Pmusic = MUSIC.getSpectrum(Rxx,AM_mag,-1*AM_phase,len(SOI))
-
+Proot = ROOT.getSpectrum(Rxx,len(SOI))
+print(Proot)
 #*****************
 #   Beamforming
 #*****************
