@@ -11,4 +11,4 @@ def getWeights(Rxx,AM_mag,AM_phase):
     
     RxxA = np.linalg.solve(Rxx,a)
     
-    return RxxA / np.dot(aH,RxxA) 
+    return RxxA / np.dot(aH,RxxA)

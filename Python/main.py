@@ -19,6 +19,7 @@ def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,ifPlot = True):
     AM_mag[:,idx:idx + len(azm)] = AM_mag[:,idx:idx + len(azm)] / np.max(AM_mag[:,idx:idx+len(azm)])
     for ii in range(len(azm)):
         y[ii] = np.abs(np.dot(w.conj(), AM_mag[:,idx + ii] * np.exp(1j * AM_phase[:,idx + ii])))
+     
     y = y / np.max(y)
     
     offset = int(np.round(0.5*len(azm)))
@@ -26,10 +27,9 @@ def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,ifPlot = True):
     azm = azm - offset
     Mag = 20*np.log10(np.roll(y,offset))
     
-#    print(Mag[120])
-    print("I think something is wrong when Test.h5 is used at DC")
-    print("The magnitude should be 0 dB at SOI, but it doesn't give that...") 
-     
+    print("There is a normalization problem with Test.h5")
+    print("It should be 0 dB at the SOI, but its not")
+    
     if(ifPlot):
         plt.plot(azm,Mag)
         plt.show()
@@ -37,14 +37,14 @@ def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,ifPlot = True):
 #***********************
 #   Simulation Parameters
 #***********************
-#Signal of Interest
-SOI = [20]
+#Signal of Interest (relative to broadside)
+SOI = [30]
 
 #Signal to Noise Ratio (dB)
 SNR = 50
 
-#fp = '../build/Test.h5'
-fp = '../build/ULA.h5'
+fp = '../build/Test.h5'
+#fp = '../build/ULA.h5'
 
 f5 = h5py.File(fp,"r")
 
@@ -64,11 +64,11 @@ AM_phase = (np.asarray(f5['/Phase'])).T
 #   Create Signal
 #**********************
 
-#freqIdx = 10;
-elevIdx = 1;
-freqIdx = 0
+soiIdx = SOI[0] + len(AM_phase[0,:]) - len(azm)
 
-soiIdx = freqIdx*elevIdx*len(azm) +  SOI[0]
+wnorm = np.max(AM_mag[:,soiIdx-SOI[0]:soiIdx-SOI[0] + len(azm)]) 
+
+#print(np.max(AM_mag[:,soiIdx-SOI[0]:soiIdx-SOI[0] + len(azm)]))
 
 x = AM_mag[:,soiIdx] * np.exp(1j * AM_phase[:,soiIdx])
 
@@ -83,7 +83,8 @@ Pds = DS.getSpectrum(Rxx,AM_mag,-1*AM_phase)
 Pmvdr = MVDR.getSpectrum(Rxx,AM_mag,-1*AM_phase)
 Pmusic = MUSIC.getSpectrum(Rxx,AM_mag,-1*AM_phase,len(SOI))
 Proot = ROOT.getSpectrum(Rxx,len(SOI))
-print(Proot)
+#print(Proot)
+#print(SOI[0])
 #*****************
 #   Beamforming
 #*****************

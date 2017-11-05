@@ -139,7 +139,8 @@ def ULA(M,d,k):
     #Create ULA array manifold
     freq = np.zeros(len(k))
     elev = [90.0] 
-    azm = np.arange(181,dtype='float')
+    #Use same range as NEC files 
+    azm = np.arange(361,dtype='float')
     
     mag = np.ones((len(k)*len(elev)*len(azm),M))
     phase = np.zeros((len(k)*len(elev)*len(azm),M))
@@ -149,6 +150,7 @@ def ULA(M,d,k):
        freq[kk] = (round(cc * k[kk] / (2*np.pi),1))
        for phi in range(len(azm)):
             for mm in range(M):
+                #to agree with NEC sign convention 
                 phase[idx,mm] = mm * k[kk] * d * np.sin(azm[phi] * np.pi / 180.)  
             idx = idx+1 
     

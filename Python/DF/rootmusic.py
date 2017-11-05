@@ -40,11 +40,10 @@ def getSpectrum(Rxx,n):
     k = 2*np.pi
     d = 0.5
     
+    #No Negative to keep with NEC convention
     azm = (np.arcsin(azm / (k*d))) * 180 / np.pi
     
-    allAzm = (np.arcsin(allAzm / (k*d))) * 180 / np.pi
+    allAzm = (np.arcsin(-allAzm / (k*d))) * 180 / np.pi
     
-    print("I have a problem if the SOI is greater than 90, I should be negative")
-
     return azm
     
