@@ -16,11 +16,12 @@ def plot_DF_Spectrum(P, azm):
 
 def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,ifPlot = True):
     y = 0*azm 
-    AM_mag[:,idx:idx + len(azm)] = AM_mag[:,idx:idx + len(azm)] / np.max(AM_mag[:,idx:idx+len(azm)])
+    
     for ii in range(len(azm)):
         y[ii] = np.abs(np.dot(w.conj(), AM_mag[:,idx + ii] * np.exp(1j * AM_phase[:,idx + ii])))
-     
-    y = y / np.max(y)
+    
+    print(y[60])
+    print(np.max(y)) 
     
     offset = int(np.round(0.5*len(azm)))
     
@@ -29,7 +30,8 @@ def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,ifPlot = True):
     
     print("There is a normalization problem with Test.h5")
     print("It should be 0 dB at the SOI, but its not")
-    
+    print("SOI = 60 has amplitude above 0 dB")
+
     if(ifPlot):
         plt.plot(azm,Mag)
         plt.show()
@@ -38,7 +40,7 @@ def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,ifPlot = True):
 #   Simulation Parameters
 #***********************
 #Signal of Interest (relative to broadside)
-SOI = [30]
+SOI = [60]
 
 #Signal to Noise Ratio (dB)
 SNR = 50
@@ -66,10 +68,6 @@ AM_phase = (np.asarray(f5['/Phase'])).T
 
 soiIdx = SOI[0] + len(AM_phase[0,:]) - len(azm)
 
-wnorm = np.max(AM_mag[:,soiIdx-SOI[0]:soiIdx-SOI[0] + len(azm)]) 
-
-#print(np.max(AM_mag[:,soiIdx-SOI[0]:soiIdx-SOI[0] + len(azm)]))
-
 x = AM_mag[:,soiIdx] * np.exp(1j * AM_phase[:,soiIdx])
 
 noise = 10**(-SNR / 10)
@@ -88,8 +86,7 @@ Proot = ROOT.getSpectrum(Rxx,len(SOI))
 #*****************
 #   Beamforming
 #*****************
-
-wmvdr = mvdr.getWeights(np.eye(5),AM_mag[:,soiIdx],AM_phase[:,soiIdx])
+wmvdr = mvdr.getWeights(Rxx,AM_mag[:,soiIdx],AM_phase[:,soiIdx])
 wAF = AF.getWeights(5,0.5,2*np.pi,SOI[0])
 wones = np.ones((1,5))
 
