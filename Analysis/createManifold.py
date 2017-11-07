@@ -121,8 +121,9 @@ def nec2hdf5(fn):
     mag = np.reshape(np.ravel(mag),(len(freq)*len(elev)*len(azm),len(Elem)))
     phase = np.reshape(np.ravel(phase),(len(freq)*len(elev)*len(azm),len(Elem)))
     
- #   if(Normalize):
- #       mag = mag / np.max(np.ravel(mag))
+    if(Normalize):
+        for ii in range(len(freq)*len(elev)*len(azm)):
+            mag[ii,:] = mag[ii,:] / np.linalg.norm(mag[ii,:])
 
     fnh5 = fn[:-4]
     fnh5 = fnh5 + ".h5"

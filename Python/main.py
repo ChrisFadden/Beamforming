@@ -20,13 +20,10 @@ def plot_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,ifPlot = True):
     for ii in range(len(azm)):
         y[ii] = np.abs(np.dot(w.conj(), AM_mag[:,idx + ii] * np.exp(1j * AM_phase[:,idx + ii])))
      
-    offset = int(np.round(0.5*len(azm)))
-    
     print(y[60])
     print(np.max(y))
 
-    azm = azm - offset
-    Mag = 20*np.log10(np.roll(y,offset))
+    Mag = 20*np.log10(y)
     
     print("The normalization problem is that not all the array manifold magnitude vectors have unit norm")
     print("This means that according to NEC there is a loss of power...")
@@ -86,10 +83,6 @@ Proot = ROOT.getSpectrum(Rxx,len(SOI))
 #   Beamforming
 #*****************
 
-#normalize magnitude
-for ii in range(len(azm)):
-    AM_mag[:,soiIdx-SOI[0]+ii] = AM_mag[:,soiIdx-SOI[0]+ii] / np.linalg.norm(AM_mag[:,soiIdx-SOI[0]+ii])
-
 wmvdr = mvdr.getWeights(Rxx,AM_mag[:,soiIdx],AM_phase[:,soiIdx])
 wAF = AF.getWeights(5,0.5,2*np.pi,SOI[0])
 wones = np.ones((1,5))
@@ -99,8 +92,8 @@ pAzm, pMag = plot_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,soiIdx - SOI[0])
 #Find Half Power Points
 offset = np.round(len(azm)*0.5)
 p3dB = np.array(np.where(pMag < -3))
-u3dB = np.min(p3dB[p3dB > (SOI[0] + offset)]) - offset
-l3dB = np.max(p3dB[p3dB < (SOI[0] + offset)]) - offset
+u3dB = np.min(p3dB[p3dB > SOI[0]]) 
+l3dB = np.max(p3dB[p3dB < SOI[0]])
 
 #Save Spectrum
 f5 = h5py.File("../build/weights.h5","w")
