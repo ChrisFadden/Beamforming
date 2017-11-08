@@ -10,5 +10,5 @@ azm = np.asarray(f5['/listAzm'])
 elev = np.asarray(f5['/listElev'])
 mag = np.asarray(f5['/Magnitude'])
 
-sns.heatmap(mag,cmap="jet",square=True,xticklabels=30,yticklabels=30,vmin=-30,vmax=0)
+sns.heatmap(mag,cmap = "viridis",square=True,xticklabels=30,yticklabels=30,vmin=-30,vmax=0)
 plt.show()
