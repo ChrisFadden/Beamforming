@@ -159,6 +159,31 @@ def ULA(M,d,k):
 
     print("Hello from Uniform Linear Array")
 
+#omni-directional rectangular array
+def URA():
+    M = 25
+    row = 5
+    col = M // row
+    k = [cc]   
+    d = 0.5
+    elev = np.arange(91,dtype='float')
+    azm = np.arange(361,dtype='float')
+    
+    mag = np.ones((len(k)*len(elev)*len(azm),M))
+    phase = np.zeros((len(k)*len(elev)*len(azm),M))
+
+    idx = 0
+    for kk in range(len(k)):
+        for th in range(len(elev)):
+            for phi in range(len(azm)):
+                for rr in range(row):
+                    for cl in range(col):
+                        rowP = rr*k[kk]*d*np.sin(azm[phi] * np.pi / 180.) 
+                        colP = cl*k[kk]*d*np.sin(elev[th] * np.pi / 180.) 
+                        phase[idx,rr*row + cl] = rowP + colP
+                idx = idx + 1
+
+    print("Hello from Uniform Rectangular Array")
 #omni-directional uniform circular array
 def UCA():
       
@@ -168,6 +193,7 @@ def UCA():
 if __name__ == '__main__':
     ULA(5,0.5,[2*np.pi])
     #UCA()
+    URA() 
     nec2hdf5("../build/Test.out") 
     print("Hello World")
 
