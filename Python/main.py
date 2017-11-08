@@ -8,6 +8,7 @@ import DF.rootmusic as ROOT
 import WEIGHT.mvdr as mvdr
 import WEIGHT.arrayFactor as AF
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 def plot_DF_Spectrum(P, azm):
     idx = (np.argmax(P) // len(azm))*len(azm)
@@ -44,6 +45,18 @@ def save_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,SOI,ifPlot = True):
 
     return
 
+def plot_2D_Beamform_Spectrum(w,AM_mag,AM_phase,azm,elev):
+    y = np.zeros((len(elev),len(azm))) 
+    ii = 0 
+    for th in range(len(elev)):
+        for phi in range(len(azm)):
+            y[th,phi] = np.abs(np.dot(w.conj(),AM_mag[:,ii]*np.exp(1j*AM_phase[:,ii])))
+            ii = ii + 1 
+    ax = sns.heatmap(y,cmap="jet",square=True,xticklabels=30,yticklabels=30)
+    ax.invert_yaxis() 
+    plt.show()
+    return
+
 #***********************
 #   Simulation Parameters
 #***********************
@@ -54,7 +67,10 @@ SOI = [180]
 SNR = 50
 
 #fp = '../build/Test.h5'
-fp = '../build/ULA.h5'
+#fp = '../build/ULA.h5'
+fp = '../build/URA.h5'
+#SOI = [45*361 + 180]
+SOI = [45*361 + 90]
 
 f5 = h5py.File(fp,"r")
 
@@ -74,32 +90,34 @@ AM_phase = (np.asarray(f5['/Phase'])).T
 #   Create Signal
 #**********************
 
-soiIdx = SOI[0] + len(AM_phase[0,:]) - len(azm)
+soiIdx = SOI[0] #+ len(AM_phase[0,:]) - len(azm)
 
 x = AM_mag[:,soiIdx] * np.exp(1j * AM_phase[:,soiIdx])
 
 noise = 10**(-SNR / 10)
-Rxx = np.outer(x,x.conj()) + noise * np.eye(5)
+Rxx = np.outer(x,x.conj()) + noise * np.eye(len(AM_phase[:,0]))
 
 #**********************
 #   Direction Finding
 #**********************
 #Get the Spectrum
-Pds = DS.getSpectrum(Rxx,AM_mag,-1*AM_phase)
-Pmvdr = MVDR.getSpectrum(Rxx,AM_mag,-1*AM_phase)
-Pmusic = MUSIC.getSpectrum(Rxx,AM_mag,-1*AM_phase,len(SOI))
-Proot = ROOT.getSpectrum(Rxx,len(SOI))
-print(Proot)
-print(SOI[0])
+#Pds = DS.getSpectrum(Rxx,AM_mag,-1*AM_phase)
+#Pmvdr = MVDR.getSpectrum(Rxx,AM_mag,-1*AM_phase)
+#Pmusic = MUSIC.getSpectrum(Rxx,AM_mag,-1*AM_phase,len(SOI))
+#Proot = ROOT.getSpectrum(Rxx,len(SOI))
+#print(Proot)
+#print(SOI[0])
 #*****************
 #   Beamforming
 #*****************
 
 wmvdr = mvdr.getWeights(Rxx,AM_mag[:,soiIdx],AM_phase[:,soiIdx])
-wAF = AF.getWeights(5,0.5,2*np.pi,SOI[0])
-wones = np.ones((1,5))
+#print(wmvdr)
+#wAF = AF.getWeights(5,0.5,2*np.pi,SOI[0])
+#wones = np.ones((1,5))
 
-save_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,soiIdx - SOI[0],SOI[0])
+#save_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,soiIdx - SOI[0],SOI[0])
+plot_2D_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,elev)
 
 #Plot Spectrum
 #plot_DF_Spectrum(Pmusic,azm)

@@ -16,6 +16,6 @@ ggplot(df,aes(azm,mag)) + geom_line() +
 	labs(x = "Azimuth (Degrees)", y = "Magnitude (dB)") +	
 	theme_bw() + theme(plot.title = element_text(hjust = 0.5, face = "bold"),
 	axis.title = element_text(face = "bold")) + 
-	scale_x_continuous(breaks = c(0,90,180,270,soi,hpp[1],hpp[2]))
+	scale_x_continuous(breaks = c(0,90,180,270,360,soi,hpp[1],hpp[2]))
 
 H5close()

@@ -164,16 +164,17 @@ def URA():
     M = 25
     row = 5
     col = M // row
-    k = [cc]   
+    k = [2*np.pi]   
     d = 0.5
     elev = np.arange(91,dtype='float')
     azm = np.arange(361,dtype='float')
-    
+    freq = np.zeros(len(k))
     mag = np.ones((len(k)*len(elev)*len(azm),M))
     phase = np.zeros((len(k)*len(elev)*len(azm),M))
 
     idx = 0
     for kk in range(len(k)):
+        freq[kk] = (round(cc*k[kk] / (2*np.pi),1))
         for th in range(len(elev)):
             for phi in range(len(azm)):
                 for rr in range(row):
@@ -182,7 +183,8 @@ def URA():
                         colP = cl*k[kk]*d*np.sin(elev[th] * np.pi / 180.) 
                         phase[idx,rr*row + cl] = rowP + colP
                 idx = idx + 1
-
+    
+    createHDF5("../build/URA.h5",freq,elev,azm,mag,phase)
     print("Hello from Uniform Rectangular Array")
 #omni-directional uniform circular array
 def UCA():
