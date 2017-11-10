@@ -43,7 +43,6 @@ def save_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,SOI,ifPlot = True):
     fmag = f5.create_dataset("Magnitude", data = np.asarray(Mag))
     fsoi = f5.create_dataset("SOI", data = np.asarray(SOI))
     f3db = f5.create_dataset("HPP", data = np.asarray([u3dB,l3dB]))
-    fazm.dims[0].label = "Azimuth (degrees)"
     fmag.dims[0].label = "Magnitude (dB)" 
 
     return
@@ -101,7 +100,8 @@ SNR = 50
 #fp = '../build/ULA.h5'
 fp = '../build/URA.h5'
 
-ySOI = 45
+#ySOI = 45
+ySOI = 0
 xSOI = 180
 SOI = [ySOI*361 + xSOI]
 #SOI = [10*361 + 180]
@@ -121,6 +121,20 @@ elev = np.asarray(f5['/listElev']).T
 AM_mag = (np.asarray(f5['/Magnitude'])).T
 AM_phase = (np.asarray(f5['/Phase'])).T
 
+
+#**********************
+#   Prepare Output
+#**********************
+fout = h5py.File("../build/output.h5","w")
+gparam = fout.create_group("Parameters")
+dazm = gparam.create_dataset("listAzm", data = np.asarray(azm))
+delev = gparam.create_dataset("listElev", data = np.asarray(elev)) 
+dfreq = gparam.create_dataset("listFreq", data = np.asarray(freq))
+dSOI = gparam.create_dataset("SOI", data = np.asarray([xSOI,ySOI]))
+dazm.dims[0].label = "Azimuth (degrees)"
+delev.dims[0].label = "Elevation (degrees)"
+dfreq.dims[0].label = "Frequency (MHz)"
+
 #**********************
 #   Create Signal
 #**********************
@@ -136,12 +150,20 @@ Rxx = np.outer(x,x.conj()) + noise * np.eye(len(AM_phase[:,0]))
 #   Direction Finding
 #**********************
 #Get the Spectrum
-#Pds = DS.getSpectrum(Rxx,AM_mag,-1*AM_phase)
-#Pmvdr = MVDR.getSpectrum(Rxx,AM_mag,-1*AM_phase)
-#Pmusic = MUSIC.getSpectrum(Rxx,AM_mag,-1*AM_phase,len(SOI))
-#Proot = ROOT.getSpectrum(Rxx,len(SOI))
+Pds = DS.getSpectrum(Rxx,AM_mag,-1*AM_phase)
+Pmvdr = MVDR.getSpectrum(Rxx,AM_mag,-1*AM_phase)
+Pmusic = MUSIC.getSpectrum(Rxx,AM_mag,-1*AM_phase,len(SOI))
+Proot = ROOT.getSpectrum(Rxx,len(SOI))
 #print(Proot)
 #print(SOI[0])
+
+#Save to Output
+gdf = fout.create_group("Direction Finding")
+dds = gdf.create_dataset("Bartlett",data = np.asarray(Pds))
+dmvdr = gdf.create_dataset("MVDR",data = np.asarray(Pmvdr))
+dmusic = gdf.create_dataset("MUSIC", data = np.asarray(Pmusic))
+droot = gdf.create_dataset("RootMUSIC", data = np.asarray(Proot))
+
 #*****************
 #   Beamforming
 #*****************
@@ -151,10 +173,10 @@ wmvdr = mvdr.getWeights(Rxx,AM_mag[:,soiIdx],AM_phase[:,soiIdx])
 #wAF = AF.getWeights(5,0.5,2*np.pi,SOI[0])
 #wones = np.ones((1,5))
 
-#save_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,soiIdx - SOI[0],SOI[0])
-plot_2D_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,elev,xSOI,ySOI,False)
+save_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,soiIdx - SOI[0],SOI[0],False)
+#plot_2D_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,elev,xSOI,ySOI,False)
 
 #Plot Spectrum
-#plot_DF_Spectrum(Pmusic,azm)
+plot_DF_Spectrum(Pds,azm)
 
 print("Hello World")
