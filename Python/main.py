@@ -159,9 +159,9 @@ Proot = ROOT.getSpectrum(Rxx,len(SOI))
 
 #Save to Output
 gdf = fout.create_group("Direction Finding")
-dds = gdf.create_dataset("Bartlett",data = np.asarray(Pds))
-dmvdr = gdf.create_dataset("MVDR",data = np.asarray(Pmvdr))
-dmusic = gdf.create_dataset("MUSIC", data = np.asarray(Pmusic))
+dds = gdf.create_dataset("Bartlett",data = np.asarray(20*np.log10(Pds)))
+dmvdr = gdf.create_dataset("MVDR",data = np.asarray(20*np.log10(Pmvdr)))
+dmusic = gdf.create_dataset("MUSIC", data = np.asarray(20*np.log10(Pmusic)))
 droot = gdf.create_dataset("RootMUSIC", data = np.asarray(Proot))
 
 #*****************

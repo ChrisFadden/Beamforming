@@ -15,7 +15,8 @@ bart = np.asarray(f5['/Direction Finding/Bartlett'])
 #*******************
 #   Set asthetics
 #*******************
-plt.style.use("ggplot")
+#plt.style.use("ggplot")
+plt.style.use("bmh")
 plt.rcParams["font.weight"] = "bold"
 plt.rcParams["axes.labelweight"] = "bold"
 plt.rcParams["axes.titleweight"] = "bold"
@@ -37,6 +38,7 @@ plt.legend(handles=[pmusic[0],pbart[0]],title="Algorithm",bbox_to_anchor=(0.9,1)
 plt.title("Array Response",fontsize=14)
 plt.xlabel("Azimuth (deg.)")
 plt.ylabel("Magnitude (dB)")
+plt.ylim((-30,0))
 
 plt.show()
 #plt.savefig("Heatmap.pdf",bbox_inches='tight')
