@@ -15,14 +15,14 @@ def plot_DF_Spectrum(P, azm):
     plt.plot(azm,P[idx:idx + len(azm)])
     plt.show()
 
-def save_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,SOI,ifPlot = True):
+def save_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,SOI,h5file,ifPlot = True):
     y = 0*azm 
     
     for ii in range(len(azm)):
         y[ii] = np.abs(np.dot(w.conj(), AM_mag[:,idx + ii] * np.exp(1j * AM_phase[:,idx + ii])))
      
     Mag = 20*np.log10(y)
-     
+    
     if(ifPlot):
         plt.plot(azm,Mag)
         plt.show()
@@ -37,17 +37,13 @@ def save_Beamform_Spectrum(w,AM_mag,AM_phase,azm,idx,SOI,ifPlot = True):
     if(np.any(p3dB < SOI)):
         l3dB = np.max(p3dB[p3dB < SOI])
 
-    #Save Spectrum
-    f5 = h5py.File("../build/weights.h5","w")
-    fazm = f5.create_dataset("listAzm", data = np.asarray(azm))
-    fmag = f5.create_dataset("Magnitude", data = np.asarray(Mag))
-    fsoi = f5.create_dataset("SOI", data = np.asarray(SOI))
-    f3db = f5.create_dataset("HPP", data = np.asarray([u3dB,l3dB]))
-    fmag.dims[0].label = "Magnitude (dB)" 
-
+    #Save Spectrum   
+    h5file.create_dataset("Magnitude", data = np.asarray(Mag))
+    h5file.create_dataset("HPP", data = np.asarray([u3dB,l3dB]))
+     
     return
 
-def plot_2D_Beamform_Spectrum(w,AM_mag,AM_phase,azm,elev,xSOI,ySOI,ifPlot = True):
+def plot_2D_Beamform_Spectrum(w,AM_mag,AM_phase,azm,elev,xSOI,ySOI,h5file,ifPlot = True):
     y = np.zeros((len(elev),len(azm))) 
     ii = 0 
     for th in range(len(elev)):
@@ -77,35 +73,25 @@ def plot_2D_Beamform_Spectrum(w,AM_mag,AM_phase,azm,elev,xSOI,ySOI,ifPlot = True
     if(np.any(p3dB < ySOI)):
         yl3dB = np.max(p3dB[p3dB < ySOI]) 
     
-    #Save Spectrum
-    f5 = h5py.File("../build/weights_2D.h5","w")
-    fazm = f5.create_dataset("listAzm", data = np.asarray(azm))
-    felev = f5.create_dataset("listElev", data = np.asarray(elev)) 
-    fmag = f5.create_dataset("Magnitude", data = Mag)
-    fsoi = f5.create_dataset("SOI", data = np.asarray([xSOI,ySOI]))
-    f3db = f5.create_dataset("HPP", data = np.asarray([xu3dB,xl3dB,yu3dB,yl3dB]))
+    #Save Spectrum 
+    h5file.create_dataset("Magnitude", data = Mag)
+    h5file.create_dataset("HPP", data = np.asarray([xu3dB,xl3dB,yu3dB,yl3dB]))
      
     return
 
 #***********************
 #   Simulation Parameters
 #***********************
-#Signal of Interest (relative to broadside)
-SOI = [180]
-
 #Signal to Noise Ratio (dB)
-SNR = 50
+SNR = 30
 
 #fp = '../build/Test.h5'
 #fp = '../build/ULA.h5'
 fp = '../build/URA.h5'
 
-#ySOI = 45
-ySOI = 0
-xSOI = 180
+ySOI = 45
+xSOI = 60
 SOI = [ySOI*361 + xSOI]
-#SOI = [10*361 + 180]
-#SOI = [90*361 + 180]
 
 f5 = h5py.File(fp,"r")
 
@@ -154,8 +140,6 @@ Pds = DS.getSpectrum(Rxx,AM_mag,-1*AM_phase)
 Pmvdr = MVDR.getSpectrum(Rxx,AM_mag,-1*AM_phase)
 Pmusic = MUSIC.getSpectrum(Rxx,AM_mag,-1*AM_phase,len(SOI))
 Proot = ROOT.getSpectrum(Rxx,len(SOI))
-#print(Proot)
-#print(SOI[0])
 
 #Save to Output
 gdf = fout.create_group("Direction Finding")
@@ -169,14 +153,27 @@ droot = gdf.create_dataset("RootMUSIC", data = np.asarray(Proot))
 #*****************
 
 wmvdr = mvdr.getWeights(Rxx,AM_mag[:,soiIdx],AM_phase[:,soiIdx])
-#print(wmvdr)
-#wAF = AF.getWeights(5,0.5,2*np.pi,SOI[0])
-#wones = np.ones((1,5))
+wAF = AF.getWeights(len(AM_mag[:,0]),0.5,2*np.pi,SOI[0])
 
-save_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,soiIdx - SOI[0],SOI[0],False)
-#plot_2D_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,elev,xSOI,ySOI,False)
+#Save to output
+gbf = fout.create_group("Beamforming")
+gmvdr = gbf.create_group("MVDR")
+gmvdr.create_dataset("weights",data = np.asarray(wmvdr))
+save_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,len(azm)*ySOI,SOI[0],gmvdr,False)
+
+gAF = gbf.create_group("Array Factor")
+gAF.create_dataset("weights",data = np.asarray(wAF))
+save_Beamform_Spectrum(wAF,AM_mag,AM_phase,azm,len(azm)*ySOI,SOI[0],gAF,False)
+
+#*******************
+#   2D-Beamforming
+#*******************
+g2bf = fout.create_group("2D Beamforming")
+gmvdr = g2bf.create_group("MVDR")
+gmvdr.create_dataset("weights",data = np.asarray(wmvdr))
+plot_2D_Beamform_Spectrum(wmvdr,AM_mag,AM_phase,azm,elev,xSOI,ySOI,gmvdr,False)
 
 #Plot Spectrum
-plot_DF_Spectrum(Pds,azm)
+#plot_DF_Spectrum(Pds,azm)
 
 print("Hello World")

@@ -123,7 +123,7 @@ def nec2hdf5(fn):
     
     if(Normalize):
         for ii in range(len(freq)*len(elev)*len(azm)):
-            mag[ii,:] = mag[ii,:] / np.linalg.norm(mag[ii,:])
+            mag[ii,:] = mag[ii,:] / (np.linalg.norm(mag[ii,:]))
 
     fnh5 = fn[:-4]
     fnh5 = fnh5 + ".h5"
