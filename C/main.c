@@ -6,7 +6,8 @@
 #include <stdlib.h>
 
 int main(int arg, char **argv) {
-  // Nec2c and Angora FDTD seem like good tools for simulating the fields...
+  // Nec2c and Python-MEEP FDTD seem like good tools for simulating the
+  // fields...
 
   /***************************
    * HDF5
