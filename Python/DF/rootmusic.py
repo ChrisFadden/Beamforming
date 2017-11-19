@@ -5,7 +5,14 @@ def hello():
     print("Hello from Root MUSIC DF module")
 
 def getSpectrum(Rxx,n):
-       
+ 
+    ##  INPUTS:
+    #       Rxx:    Covariance Matrix           (dim: NumAnt x NumAnt)
+    #         n:    The number of SOI 
+    #
+    ##  OUTPUTS:
+    #       azm:    The angle of the SOI
+
     w,v = np.linalg.eigh(Rxx)
 
     idx = np.argsort(w)

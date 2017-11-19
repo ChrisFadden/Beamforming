@@ -86,10 +86,11 @@ def plot_2D_Beamform_Spectrum(w,AM_mag,AM_phase,azm,elev,xSOI,ySOI,h5file,ifPlot
 SNR = 30
 
 #fp = '../build/Test.h5'
-#fp = '../build/ULA.h5'
-fp = '../build/URA.h5'
+fp = '../build/ULA.h5'
+#fp = '../build/URA.h5'
 
-ySOI = 45
+#ySOI = 45
+ySOI = 0
 xSOI = 60
 SOI = [ySOI*361 + xSOI]
 
@@ -153,6 +154,8 @@ droot = gdf.create_dataset("RootMUSIC", data = np.asarray(Proot))
 #*****************
 
 wmvdr = mvdr.getWeights(Rxx,AM_mag[:,soiIdx],AM_phase[:,soiIdx])
+print(np.linalg.norm(wmvdr))
+
 wAF = AF.getWeights(len(AM_mag[:,0]),0.5,2*np.pi,SOI[0])
 
 #Save to output
