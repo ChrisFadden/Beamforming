@@ -4,12 +4,13 @@ import numpy as np
 def hello():
     print("Hello from Root MUSIC DF module")
 
-def getSpectrum(Rxx,n):
+def getSpectrum(Rxx,n=1,k = 2*np.pi,d=0.5):
  
     ##  INPUTS:
     #       Rxx:    Covariance Matrix           (dim: NumAnt x NumAnt)
     #         n:    The number of SOI 
-    #
+    #         k:    The wavenumber
+    #         d:    The spacing in wavelengths
     ##  OUTPUTS:
     #       azm:    The angle of the SOI
 
@@ -43,10 +44,7 @@ def getSpectrum(Rxx,n):
     idx = np.argsort(d2c) 
     azm = np.angle(z[idx[:n]])
     
-    #normalize azimuths
-    k = 2*np.pi
-    d = 0.5
-    
+   
     #No Negative to keep with NEC convention
     azm = (np.arcsin(azm / (k*d))) * 180 / np.pi
     

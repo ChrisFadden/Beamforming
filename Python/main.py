@@ -152,10 +152,7 @@ droot = gdf.create_dataset("RootMUSIC", data = np.asarray(Proot))
 #*****************
 #   Beamforming
 #*****************
-
 wmvdr = mvdr.getWeights(Rxx,AM_mag[:,soiIdx],AM_phase[:,soiIdx])
-print(np.linalg.norm(wmvdr))
-
 wAF = AF.getWeights(len(AM_mag[:,0]),0.5,2*np.pi,SOI[0])
 
 #Save to output
