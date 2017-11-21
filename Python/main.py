@@ -1,14 +1,21 @@
 import h5py
 import numpy as np
 import random
+
 import DF.bartlett as DS
 import DF.mvdr as MVDR
 import DF.music as MUSIC
 import DF.rootmusic as ROOT
+
 import WEIGHT.mvdr as mvdr
 import WEIGHT.arrayFactor as AF
+
+import ecos
+
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+
 
 def plot_DF_Spectrum(P, azm):
     idx = (np.argmax(P) // len(azm))*len(azm)

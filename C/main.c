@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 int main(int arg, char **argv) {
-  // Nec2c and Python-MEEP FDTD seem like good tools for simulating the
+  // Nec2c and Angora (easier to install then MEEP) FDTD seem like good tools for simulating the
   // fields...
 
   /***************************
