@@ -21,11 +21,13 @@ int main(int arg, char **argv) {
 	hid_t file_id, dataset_id;
 	hid_t dataspace, datatype;
 	int status_n;	
-	hsize_t	dims[2] = {0, 0};
+	hsize_t	dims[2] = {1, 1};
 	herr_t status;	
 
 	file_id = H5Fopen(FP,H5F_ACC_RDONLY,H5P_DEFAULT);
-	dataset_id = H5Dopen2(file_id, "/listAzm",H5P_DEFAULT);
+//	dataset_id = H5Dopen2(file_id, "/listAzm",H5P_DEFAULT);
+//	dataset_id = H5Dopen2(file_id, "/Phase",H5P_DEFAULT);
+	dataset_id = H5Dopen2(file_id, "/Magnitude",H5P_DEFAULT);
 
   dataspace = H5Dget_space(dataset_id);    /* dataspace handle */
   status_n  = H5Sget_simple_extent_dims(dataspace, dims, NULL);
@@ -34,14 +36,23 @@ int main(int arg, char **argv) {
 	
 	datatype = H5Dget_type(dataset_id); 
 	
-	double* dataArray = (double*) malloc(dims[0]*sizeof(double));
-	
+	double* dataArray = (double*) malloc(dims[0]*dims[1]*sizeof(double));
+
 	status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
-		     H5P_DEFAULT, dataArray);
-		
+				 H5P_DEFAULT, dataArray);
+	
+	for(int ii = 0; ii < dims[0]; ++ii){
+		std::cout << ii << " ";	
+		for(int jj = 0; jj < dims[1]; ++jj){
+			std::cout << dataArray[ii*dims[1] + jj] << " ";	
+		}
+		std::cout << std::endl;
+	}
+
 	/**********************
 	 * Delete Pointers
-	 *********************/
+	 *********************/	
+
 	free(dataArray);	
 	status = H5Sclose(dataspace);
 	status = H5Dclose(dataset_id);
