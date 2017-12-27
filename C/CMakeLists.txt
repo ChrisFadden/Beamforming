@@ -19,6 +19,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 #	Add src files
 #***************
 set(SRC main.cpp)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/IO)
 add_executable(Beamforming ${SRC})
 
 #**************************
@@ -37,7 +38,8 @@ find_package(BLAS REQUIRED)
 include_directories(${BLAS_INCLUDE_DIR})
 
 target_link_libraries(Beamforming hdf5 ${MPI_LIBRARIES} 
-	${ARMADILLO_LIBRARIES} ${BLAS_LIBRARIES} ${CMAKE_SOURCE_DIR}/libs/pogs.a)
+	${ARMADILLO_LIBRARIES} ${BLAS_LIBRARIES} ${CMAKE_SOURCE_DIR}/libs/pogs.a
+	IO)
 
 set_target_properties(Beamforming PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
 set_target_properties(Beamforming PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}")
