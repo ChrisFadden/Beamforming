@@ -21,7 +21,11 @@ int main(int arg, char **argv) {
 	arma::Mat<double> B;
 	h5IO::inputMat(FP,"/Phase",B);
 	
-  std::cout << "Hello World" << std::endl;
+	arma::Mat<double> A = arma::randu<arma::mat>(240,360);
+	
+	h5IO::outputMat("TestOutput.h5","/TestGroup",A);
+
+	std::cout << "Hello World" << std::endl;
 
   return 0;
 }

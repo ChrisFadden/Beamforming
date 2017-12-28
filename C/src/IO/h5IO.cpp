@@ -40,3 +40,43 @@ void h5IO::inputMat(const char* fn, const char* group, arma::Mat<double> &B){
 	
 	return;
 }
+
+void h5IO::outputMat(const char* fn, const char* group, arma::Mat<double> &A){
+	
+	/*******************
+	*	Initialize Types
+	******************/
+	hid_t file, space, dset;
+	herr_t	status;
+	hsize_t dims[2];
+	
+	/*****************
+	 *	Output matrix
+	 ****************/
+
+	//ACC_TRUNC means overwrite the file if it exists
+	file = H5Fcreate(fn,H5F_ACC_TRUNC,H5P_DEFAULT,H5P_DEFAULT);
+	
+	dims[0] = A.n_rows;
+	dims[1] = A.n_cols;
+	
+	space = H5Screate_simple(2,dims,NULL);
+
+	dset = H5Dcreate(file,group,H5T_NATIVE_DOUBLE,space,H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
+
+	status = H5Dwrite(dset,H5T_NATIVE_DOUBLE,H5S_ALL,H5S_ALL,H5P_DEFAULT,A.memptr());
+
+	/********************
+	 *	Delete Pointers
+	 *******************/
+	
+	status = H5Dclose(dset);
+	status = H5Sclose(space);
+	status = H5Fclose(file);
+
+	return;
+}
+
+
+
+

@@ -5,6 +5,7 @@
 
 namespace h5IO{
 	void inputMat(const char*,const char*,arma::Mat<double> &);
+	void outputMat(const char*, const char*,arma::Mat<double> &);
 }
 
 #endif
